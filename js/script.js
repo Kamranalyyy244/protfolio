@@ -1,3 +1,4 @@
+
 // toggle icon navbar
 
     const menuIcon = document.querySelector('#menu-icon');
@@ -38,7 +39,72 @@ window.onscroll = () => {
 
     menuIcon.classList.remove('bx-x');
     navbar.classList.remove('active');
-
-    // animation footer on scroll
-
 }
+    // Form Submit
+const form = document.getElementById('form');
+
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+  const object = Object.fromEntries(formData);
+  const json = JSON.stringify(object);
+
+  Toastify({
+    text: "Sending...",
+    duration: 2000,
+    gravity: "top",
+    position: "right",
+    style: {
+      background: "linear-gradient(to right, #f39c12, #f1c40f)",
+    },
+  }).showToast();
+
+  fetch("https://api.web3forms.com/submit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: json,
+  })
+    .then(async (response) => {
+      let json = await response.json();
+      if (response.status === 200) {
+        Toastify({
+          text: "Message sent successfully!",
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "linear-gradient(to right, #00b09b, #96c93d)",
+          },
+        }).showToast();
+      } else {
+        Toastify({
+          text: "Failed: " + json.message,
+          duration: 3000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "linear-gradient(to right, #e74c3c, #c0392b)",
+          },
+        }).showToast();
+      }
+    })
+    .catch((error) => {
+      Toastify({
+        text: "Something went wrong!",
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        style: {
+          background: "linear-gradient(to right, #e74c3c, #c0392b)",
+        },
+      }).showToast();
+    })
+    .finally(() => {
+      form.reset();
+    });
+});
+
